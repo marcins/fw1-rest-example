@@ -5,4 +5,5 @@ component output="false" displayname="" accessors="true"  {
 	public function init(){
 		return this;
 	}
+
 }

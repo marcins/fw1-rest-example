@@ -6,7 +6,10 @@ component extends="org.corfield.framework" {
 	variables.framework = {
 		base = "/app/",
 		reloadApplicationOnEveryRequest = true,
-		trace = true
+		trace = true,
+		routes = [{
+			"$RESOURCES" = "lists"
+		}]
 	};
 
 	public void function setupApplication () {
