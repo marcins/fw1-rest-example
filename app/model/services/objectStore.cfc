@@ -56,6 +56,7 @@ component output="false" displayname="" accessors="true"  {
 						arrayAppend(objects, object);
 					}
 				} catch(any e) {
+					writeLog(text="Filter function failed: #e.message#", severity="error");
 					// ignore objects we can't read right
 				}
 			}
@@ -71,6 +72,21 @@ component output="false" displayname="" accessors="true"  {
 		} else {
 			return results[1];
 		}
+	}
+
+	public array function getObjectsByProperties()
+	{
+		var keys = structKeyArray(arguments);
+		var args = arguments;
+		var objects = getObjectsByFilterFunction(function (object) {
+			for (var property in keys) {
+				if (structKeyExists(object, property) && object[property] == args[property]) {
+					return true;
+				}
+			}
+			return false;
+		});
+		return objects;
 	}
 
 	public array function getObjectsByProperty(required string property, required any value)

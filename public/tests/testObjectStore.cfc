@@ -5,7 +5,7 @@ component extends="mxunit.framework.TestCase" {
 
 	public void function testEmptyStore () {
 		assertEquals(0, objectStore.objectCount());
-		assertEquals({}, objectStore.getObjectById("doesn't exist"));
+		assertTrue(isNull(objectStore.getObjectById("doesn't exist")));
 	}
 
 	public void function testBasicAddRetrieve () {
@@ -46,10 +46,7 @@ component extends="mxunit.framework.TestCase" {
 			{id: 2, name: "Jane", type: "Person"},
 			{id: 3, name: "Foo", type: "Other"}
 		];
-
-		for (var object in objects) {
-			objectStore.setObject(object);
-		}
+		_populateStore(objects);
 		var objs = objectStore.getObjectsByFilterFunction(function (object) {
 			return object.name == "Bob" && object.type == "Person";
 		});
@@ -78,5 +75,25 @@ component extends="mxunit.framework.TestCase" {
 		var retrievedObj = objectStore.getObjectByProperty("name", "Jane");
 		assertFalse(isNull(retrievedObj));
 		assertEquals("Jane", retrievedObj.name);
+	}
+
+	public void function testGetObjectsByMultipleProperties () {
+		_populateStore([
+			{id = 1, name = "John", type = "person", active = false},
+			{id = 2, name = "Bob", type = "user", active = true},
+			{id = 3, name = "Jane", type = "user", active = true}
+		]);
+
+		var objs = objectStore.getObjectsByProperties(active = true, type = "user");
+		assertEquals(2, objs.len());
+		assertEquals("Bob", objs[1].name);
+		assertEquals("Jane", objs[2].name);
+	}
+
+	private void function _populateStore (required array objects)
+	{
+		for (var object in objects) {
+			objectStore.setObject(object);
+		}
 	}
 }
