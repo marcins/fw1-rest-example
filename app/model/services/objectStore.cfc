@@ -36,15 +36,14 @@ component output="false" displayname="" accessors="true"  {
 		}
 	}
 
-	public struct function getObjectById(required string id)
-	{
-		var object = {};
+	public any function getObjectById(required string id)
+	{;
 		lock name="objectAccess" type="exclusive" timeout="30" {
 			if (structKeyExists(variables.objectsById, arguments.id)) {
-				object = variables.objectsById[arguments.id];
+				return variables.objectsById[arguments.id];
 			}
 		}
-		return object;
+		return _null();
 	}
 
 	public array function getObjectsByFilterFunction(required function filter)

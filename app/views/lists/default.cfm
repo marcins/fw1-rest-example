@@ -2,9 +2,9 @@
 <h1>Lists</h1>
 <ul>
 <cfloop array="#rc.lists#" index="list">
-	<li><a href="#getBaseUrl()#/index.cfm/lists/#list.id#">#list.name#</a></li>
+	<li><a href="#getResolvedBaseUrl()#/lists/#list.id#">#list.name#</a></li>
 </cfloop>
 </ul>
 
-<a href="#buildUrl(action='.new')#">New list</a>
+<a href="#getResolvedBaseUrl()#/lists/new">New list</a>
 </cfoutput>

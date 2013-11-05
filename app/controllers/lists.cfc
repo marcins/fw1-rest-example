@@ -9,7 +9,15 @@ component output="false" displayname="" accessors="true"  {
 
 	public void function default (required any rc)
 	{
+		param name="rc.type" default="";
 		rc.lists = getObjectStore().getObjectsByProperty("type", "list");
+		switch (rc.contentType) {
+			case "json":
+			fw.renderData("json", rc.lists);
+			break;
+			case "html":
+			break;
+		}
 	}
 
 	public void function create (required any rc)
@@ -30,7 +38,20 @@ component output="false" displayname="" accessors="true"  {
 		} else {
 			throw(message="Exsiting!");
 		}
+	}
 
+	public void function show (required any rc)
+	{
+		rc.list = getObjectStore().getObjectById(rc.id);
+		if (isNull(rc.list)) {
+			if (rc.contentType == "json") {
+				return fw.renderData("json", {error = "List not found"}, 404);
+			} else {
+				throw(message="List not found");
+			}
+		} else {
+			rc.listItems = getObjectStore().getObjectsByProperty("listId", rc.list.id);
+		}
 	}
 
 }
