@@ -20,9 +20,7 @@ component output="false" displayname="" accessors="true"  {
 		if (Trim(rc.name) == "") {
 			fw.renderData("json", {error = "Name is required"});
 		} else {
-			var existingList = getObjectStore().getObjectByFilterFunction(function (object) {
-				return object.type == "list" && object.name == rc.name;
-			});
+			var existingList = getObjectStore().getObjectByProperties(type = "list", name = rc.name);
 			if (isNull(existingList)) {
 				var list = {};
 				list["name"] = rc.name;
