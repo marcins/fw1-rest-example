@@ -8,9 +8,13 @@ component extends="org.corfield.framework" {
 		reloadApplicationOnEveryRequest = true,
 		trace = false,
 		routes = [{
-			"$RESOURCES" = "lists"
+			"$RESOURCES" = { resources = "lists", nested = "items" }
 		}]
 	};
+
+	if (structKeyExists(url, "_method") && cgi.request_method == 'POST' && listFindNoCase('put,patch,delete', url._method)) {
+		request._fw1.cgiRequestMethod = url._method;
+	}
 
 	public void function setupApplication () {
 		var beanProperties = {
