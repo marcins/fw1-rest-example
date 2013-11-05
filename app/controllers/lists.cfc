@@ -9,48 +9,41 @@ component output="false" displayname="" accessors="true"  {
 
 	public void function default (required any rc)
 	{
-		param name="rc.type" default="";
 		rc.lists = getObjectStore().getObjectsByProperty("type", "list");
-		switch (rc.contentType) {
-			case "json":
-			fw.renderData("json", rc.lists);
-			break;
-			case "html":
-			break;
-		}
+		fw.renderData("json", rc.lists);
 	}
 
 	public void function create (required any rc)
 	{
 		param name="rc.name" default="";
 
-		if (rc.name == "") throw(message="Name required");
-		var existingList = getObjectStore().getObjectByFilterFunction(function (object) {
-			return object.type == "list" && object.name == rc.name;
-		});
-
-		if (isNull(existingList)) {
-			var list = {};
-			list["name"] = rc.name;
-			list["type"] = "list";
-			getObjectStore().setObject(list);
-			fw.redirect(".default");
+		if (Trim(rc.name) == "") {
+			fw.renderData("json", {error = "Name is required"});
 		} else {
-			throw(message="Exsiting!");
+			var existingList = getObjectStore().getObjectByFilterFunction(function (object) {
+				return object.type == "list" && object.name == rc.name;
+			});
+			if (isNull(existingList)) {
+				var list = {};
+				list["name"] = rc.name;
+				list["type"] = "list";
+				getObjectStore().setObject(list);
+			}
+			fw.renderData("json", list);
 		}
 	}
 
 	public void function show (required any rc)
 	{
-		rc.list = getObjectStore().getObjectById(rc.id);
-		if (isNull(rc.list)) {
-			if (rc.contentType == "json") {
-				return fw.renderData("json", {error = "List not found"}, 404);
-			} else {
-				throw(message="List not found");
-			}
+		var list = getObjectStore().getObjectById(rc.id);
+		if (isNull(list)) {
+			return fw.renderData("json", {error = "List not found"}, 404);
 		} else {
-			rc.listItems = getObjectStore().getObjectsByProperty("listId", rc.list.id);
+			var listItems = getObjectStore().getObjectsByProperty("listId", list.id);
+			var result = {};
+			result["list"] = list;
+			result["listItems"] = listItems;
+			fw.renderData("json", result);
 		}
 	}
 

@@ -28,15 +28,4 @@ component extends="org.corfield.framework" {
 		}
 	}
 
-	public void function before (required struct rc) {
-		if (!structKeyExists(rc, "contentType")) {
-			var headers = getHTTPRequestData().headers;
-			if (structKeyExists(headers, "Accept") && headers['Accept'] CONTAINS "application/json") {
-				rc.contentType = "json";
-			} else {
-				rc.contentType = "html";
-			}
-		}
-	}
-
 }
