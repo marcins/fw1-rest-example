@@ -67,11 +67,7 @@ component output="false" displayname="" accessors="true"  {
 	public any function getObjectByFilterFunction(required function filter)
 	{
 		var results = getObjectsByFilterFunction(filter);
-		if (arrayLen(results) == 0) {
-			return _null();
-		} else {
-			return results[1];
-		}
+		return _returnOne(results);
 	}
 
 	public array function getObjectsByProperties()
@@ -80,31 +76,32 @@ component output="false" displayname="" accessors="true"  {
 		var args = arguments;
 		var objects = getObjectsByFilterFunction(function (object) {
 			for (var property in keys) {
-				if (structKeyExists(object, property) && object[property] == args[property]) {
-					return true;
+				if (not structKeyExists(object, property) || not object[property] == args[property]) {
+					return false;
 				}
 			}
-			return false;
+			return true;
 		});
 		return objects;
 	}
 
+	public any function getObjectByProperties()
+	{
+		var results = getObjectsByProperties(argumentCollection=arguments);
+		return _returnOne(results);
+	}
+
 	public array function getObjectsByProperty(required string property, required any value)
 	{
-		var objects = getObjectsByFilterFunction(function (object) {
-			return (structKeyExists(object, property) && object[property] == value);
-		});
-		return objects;
+		var args = {};
+		args[property] = value;
+		return getObjectsByProperties(argumentCollection=args);
 	}
 
 	public struct function getObjectByProperty(required string property, required any value)
 	{
 		var results = getObjectsByProperty(argumentCollection=arguments);
-		if (arrayLen(results) == 0 ) {
-			return _null();
-		} else {
-			return results[1];
-		}
+		return _returnOne(results);
 	}
 
 	public numeric function objectCount()
@@ -115,6 +112,17 @@ component output="false" displayname="" accessors="true"  {
 	public array function getAllObjects()
 	{
 		return variables.objects;
+	}
+
+	private any function _returnOne(required array results)
+	{
+		if (arrayLen(results) == 0 ) {
+			return _null();
+		} else if (arrayLen(results) > 1) {
+			throw(message="Expected only 1 result", errorCode="ObjectStore.TooManyMatches");
+		} else {
+			return results[1];
+		}
 	}
 
 	private void function _loadDatabase() {

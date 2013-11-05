@@ -81,13 +81,39 @@ component extends="mxunit.framework.TestCase" {
 		_populateStore([
 			{id = 1, name = "John", type = "person", active = false},
 			{id = 2, name = "Bob", type = "user", active = true},
-			{id = 3, name = "Jane", type = "user", active = true}
+			{id = 3, name = "Jane", type = "user", active = true},
+			{id = 4, name = "Rick", type = "person", active = true},
 		]);
 
 		var objs = objectStore.getObjectsByProperties(active = true, type = "user");
 		assertEquals(2, objs.len());
 		assertEquals("Bob", objs[1].name);
 		assertEquals("Jane", objs[2].name);
+	}
+
+	public void function testGetObjectByMultipleProperties () {
+		_populateStore([
+			{id = 1, name = "John", type = "person", active = false},
+			{id = 2, name = "Bob", type = "user", active = true},
+			{id = 3, name = "Jane", type = "user", active = true}
+		]);
+
+		var obj = objectStore.getObjectByProperties(name = "Bob", type = "user");
+		assertEquals("Bob", obj.name);
+	}
+
+	public void function testGetObjectByMultiplePropertiesMultipleMatch () {
+		_populateStore([
+			{id = 1, name = "John", type = "person", active = false},
+			{id = 2, name = "Bob", type = "user", active = true},
+			{id = 3, name = "Jane", type = "user", active = true}
+		]);
+
+		try {
+			var obj = objectStore.getObjectByProperties(active = true, type = "user");
+		} catch (any e) {
+			assertEquals("ObjectStore.TooManyMatches", e.errorCode);
+		}
 	}
 
 	private void function _populateStore (required array objects)
