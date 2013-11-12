@@ -21,12 +21,7 @@ component output="false" displayname="" accessors="true"  {
 	{
 		lock name="objectAccess" type="exclusive" timeout="30" {
 			if (structKeyExists(data, "id") && structKeyExists(variables.objectsById, data.id)) {
-				for (var i = 1; i <= ArrayLen(variables.objects); i++) {
-					if (variables.objects[i].id == data.id) {
-						arrayDeleteAt(variables.objects, i);
-						break;
-					}
-				}
+				_deleteObjectById(data.id);
 			} else if(!structKeyExists(data, "id")) {
 				data['id'] = createUUID();
 			}
@@ -37,13 +32,32 @@ component output="false" displayname="" accessors="true"  {
 	}
 
 	public any function getObjectById(required string id)
-	{;
+	{
 		lock name="objectAccess" type="exclusive" timeout="30" {
 			if (structKeyExists(variables.objectsById, arguments.id)) {
 				return variables.objectsById[arguments.id];
 			}
 		}
 		return _null();
+	}
+
+	public void function deleteObjectById(required string id)
+	{
+		lock name="objectAccess" type="exclusive" timeout="30" {
+			_deleteObjectById(arguments.id);
+			_saveDatabase();
+		}
+	}
+
+	private void function _deleteObjectById(required string id)
+	{
+		for (var i = 1; i <= ArrayLen(variables.objects); i++) {
+			if (variables.objects[i].id == arguments.id) {
+				arrayDeleteAt(variables.objects, i);
+				break;
+			}
+		}
+		structDelete(variables.objectsById, arguments.id);
 	}
 
 	public array function getObjectsByFilterFunction(required function filter)

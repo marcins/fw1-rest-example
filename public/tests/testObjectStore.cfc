@@ -116,6 +116,18 @@ component extends="mxunit.framework.TestCase" {
 		}
 	}
 
+	public void function testDeleteObject () {
+		_populateStore([
+			{id=1, name = "John"},
+			{id=2, name = "Bob"},
+			{id=3, name = "Jane"}
+		]);
+		objectStore.deleteObjectById(2);
+		assertEquals(2, objectStore.objectCount());
+		var obj = objectStore.getObjectById(2);
+		assertTrue(isNull(obj));
+	}
+
 	private void function _populateStore (required array objects)
 	{
 		for (var object in objects) {
