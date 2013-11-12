@@ -25,6 +25,7 @@ component output="false" displayname="" accessors="true"  {
 				var list = {};
 				list["name"] = rc.name;
 				list["type"] = "list";
+				list["itemCount"] = 0;
 				getObjectStore().setObject(list);
 			}
 			fw.renderData("json", list);
@@ -43,6 +44,13 @@ component output="false" displayname="" accessors="true"  {
 			result["listItems"] = listItems;
 			fw.renderData("json", result);
 		}
+	}
+
+	public void function destroy (required any rc)
+	{
+		getObjectStore().deleteObjectById(rc.id);
+		rc.lists = getObjectStore().getObjectsByProperty("type", "list");
+		fw.renderData("json", rc.lists);
 	}
 
 }
